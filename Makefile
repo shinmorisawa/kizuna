@@ -4,7 +4,7 @@ CXXFLAGS := -Iinclude -Wall -Wextra -Os
 SRC_DIR := src
 OBJ_DIR := obj
 BUILD_DIR := build
-TARGET := $(BUILD_DIR)/main
+TARGET := $(BUILD_DIR)/kizuna
 
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
