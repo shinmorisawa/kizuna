@@ -17,10 +17,9 @@ void Socket::startAcceptingClients(int serverSocket) {
 			recv(clientSocket, buffer, sizeof(buffer), 0);
 	
 			std::string request(buffer);
-			std::cout << request;
 
 			HTTP::parseRequest(request);
-
+			
 			close(clientSocket);
 		}).detach();
 	}
