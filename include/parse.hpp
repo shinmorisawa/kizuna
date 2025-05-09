@@ -2,7 +2,7 @@
 #define PARSE_HPP
 
 namespace HTTP {
-	class HttpRequest {
+	class Request {
 		public:
 			std::string getMethod();
 			std::string getPath();
@@ -20,8 +20,8 @@ namespace HTTP {
 			std::string body;
 	};
 
-	HttpRequest parseRequest(std::string request);
-	HttpRequest blankRequest();
+	Request parseRequest(std::string request);
+	Request blankRequest();
 }
 
 #endif
