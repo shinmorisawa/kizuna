@@ -3,21 +3,27 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string>
+#include <thread>
 #include "parse.hpp"
 #include "socket.hpp"
 
-void Socket::acceptClient(int serverSocket) {
-	int clientSocket = accept(serverSocket, nullptr, nullptr);
-	char buffer[16384];
+void Socket::startAcceptingClients(int serverSocket) {
+	while (true) {
+		int clientSocket = accept(serverSocket, nullptr, nullptr);
+		
+		std::thread([clientSocket]() {
+			char buffer[16384];
 
-	recv(clientSocket, buffer, sizeof(buffer), 0);
+			recv(clientSocket, buffer, sizeof(buffer), 0);
 	
-	std::string request(buffer);
-	std::cout << request;
+			std::string request(buffer);
+			std::cout << request;
 
-	HTTP::parseRequest(request);
+			HTTP::parseRequest(request);
 
-	close(clientSocket);
+			close(clientSocket);
+		}).detach();
+	}
 }
 
 void Socket::initSocket() {
@@ -29,8 +35,7 @@ void Socket::initSocket() {
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 
 	bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-
 	listen(serverSocket, 5);
 	
-	Socket::acceptClient(serverSocket);
+	Socket::startAcceptingClients(serverSocket);
 }

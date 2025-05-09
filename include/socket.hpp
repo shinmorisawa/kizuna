@@ -2,7 +2,7 @@
 #define SOCKET_HPP
 
 namespace Socket {
-	void acceptClient(int serverSocket);
+	void startAcceptingClients(int serverSocket);
 	void initSocket();
 }
 
