@@ -2,6 +2,5 @@
 
 int main() {
 	Socket::initSocket();
-
 	return 0;
 }

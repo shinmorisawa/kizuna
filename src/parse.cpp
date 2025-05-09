@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <map>
 #include "parse.hpp"
 
 HTTP::Request HTTP::parseRequest(std::string request) {
@@ -7,9 +8,8 @@ HTTP::Request HTTP::parseRequest(std::string request) {
 
 	std::string::size_type end = request_line.find("\r\n");
 	request_line = request_line.substr(0, end);
-	std::cout << request_line;
 
-	/* TODO: implement parser */
+	
 
 	return HTTP::blankRequest();
 }
@@ -34,6 +34,7 @@ HTTP::Request HTTP::blankRequest() {
 	blank.setPath("0");
 	blank.setVersion("0");
 	blank.setBody("0");
+	blank.headers = {{}};
 
 	return blank;
 }
