@@ -23,7 +23,9 @@ void Socket::startAcceptingClients(int serverSocket) {
 			HTTP::Response response = App::returnResponse(parsed_request);
 			std::string raw = response.toString();
 
-			send(clientSocket, raw.c_str(), sizeof(raw.c_str()), 0);
+			std::cout << "sending response..." << std::endl;
+			std::cout << "response: " << raw << std::endl;
+			send(clientSocket, raw.c_str(), raw.size(), 0);
 
 			close(clientSocket);
 		}).detach();
