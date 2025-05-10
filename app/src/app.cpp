@@ -9,9 +9,8 @@ HTTP::Response App::returnResponse(HTTP::Request request) {
 	if (path == "/") {
 		path = "/index.html";
 	}
-	response.body = File::getTextFile(path);
+	response.body = File::getFile(path);
 	response.headers["Content-Length"] = std::to_string(response.body.size());
-
 	response.headers["Content-Type"] = File::getMIMEType(path);
 
 	if (response.body == "failed") {
