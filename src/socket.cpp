@@ -10,12 +10,12 @@
 void Socket::startAcceptingClients(int serverSocket) {
 	while (true) {
 		int clientSocket = accept(serverSocket, nullptr, nullptr);
-		
+		if (clientSocket < 0) continue;
+
 		std::thread([clientSocket]() {
 			char buffer[16384];
 
 			recv(clientSocket, buffer, sizeof(buffer), 0);
-	
 			std::string request(buffer);
 
 			HTTP::parseRequest(request);

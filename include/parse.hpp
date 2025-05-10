@@ -23,7 +23,7 @@ namespace HTTP {
 			std::string body;
 	};
 
-	Response parseRequest(std::string request);
+	Request parseRequest(std::string request);
 }
 
 #endif

@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Iinclude -Wall -Wextra -Os -flto -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions
+CXXFLAGS := -Iapp/include -Iinclude -Wall -Wextra -Os -flto -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions
 
 SRC_DIR := src
 OBJ_DIR := obj
