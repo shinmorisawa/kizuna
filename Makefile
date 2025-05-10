@@ -18,6 +18,9 @@ all: $(TARGET)
 release: $(TARGET)
 	strip $(TARGET)
 
+upx: $(TARGET)
+	upx -9 --ultra-brute $(TARGET)
+
 $(TARGET): $(OBJS) $(APP_OBJS)
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(OBJS) $(APP_OBJS) -o $@

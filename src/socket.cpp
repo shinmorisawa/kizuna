@@ -6,6 +6,7 @@
 #include <thread>
 #include "http.hpp"
 #include "socket.hpp"
+#include "app.hpp"
 
 void Socket::startAcceptingClients(int serverSocket) {
 	while (true) {
@@ -18,8 +19,12 @@ void Socket::startAcceptingClients(int serverSocket) {
 			recv(clientSocket, buffer, sizeof(buffer), 0);
 			std::string request(buffer);
 
-			HTTP::parseRequest(request);
-			
+			HTTP::Request parsed_request = HTTP::parseRequest(request);
+			HTTP::Response response = App::returnResponse(parsed_request);
+			std::string raw = response.toString();
+
+			send(clientSocket, raw.c_str(), sizeof(raw.c_str()), 0);
+
 			close(clientSocket);
 		}).detach();
 	}

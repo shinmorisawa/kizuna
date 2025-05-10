@@ -14,11 +14,29 @@ namespace HTTP {
 
 	class Response {
 		public:
-			std::string version;
-			std::string status_code;
-			std::string status_text;
+			std::string version = "HTTP/1.1";
+			int status_code = 200;
+			std::string status_text = "OK";
 			std::map<std::string, std::string> headers;
 			std::string body;
+
+			Response() {}
+
+			Response(int status_code, const std::string &text, const std::string &body_content = "")
+				: status_code(status_code), status_text(text), body(body_content) {
+				version = "HTTP/1.1";
+				headers["Content-Length"] = std::to_string(body.size());
+				headers["Content-Type"] = "text/plain";
+			}
+
+			std::string toString() const {
+				std::string res = version + " " + std::to_string(status_code) + " " + status_text + "\r\n";
+				for (const auto &[key, val] : headers) {
+					res += key + ": " + val + "\r\n";
+				}
+				res += "\r\n" + body;
+				return res;
+			}
 	};
 
 	Request parseRequest(std::string request);
