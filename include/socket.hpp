@@ -1,9 +1,6 @@
-#ifndef SOCKET_HPP
-#define SOCKET_HPP
+#pragma once
 
 namespace Socket {
 	void startAcceptingClients(int serverSocket);
 	void initSocket();
 }
-
-#endif

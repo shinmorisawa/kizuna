@@ -1,6 +1,4 @@
-#ifndef PARSE_HPP
-#define PARSE_HPP
-
+#pragma once
 #include <map>
 #include <string>
 
@@ -25,5 +23,3 @@ namespace HTTP {
 
 	Request parseRequest(std::string request);
 }
-
-#endif
