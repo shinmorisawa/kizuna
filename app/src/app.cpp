@@ -8,10 +8,11 @@ HTTP::Response App::returnResponse(HTTP::Request request) {
 	std::string path = request.path;
 	if (path == "/") {
 		path = "/index.html";
-		response.headers["Content-Type"] = "text/html";
 	}
 	response.body = File::getTextFile(path);
 	response.headers["Content-Length"] = std::to_string(response.body.size());
+
+	response.headers["Content-Type"] = File::getMIMEType(path);
 
 	if (response.body == "failed") {
 		response.status_code = 404;

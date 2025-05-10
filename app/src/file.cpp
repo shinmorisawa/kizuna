@@ -25,4 +25,17 @@ std::string File::getTextFile(std::string path) {
 	return buf.str();
 }
 
+std::string File::getMIMEType(std::string path) {
+	if (path.ends_with(".html")) return "text/html";
+	if (path.ends_with(".css")) return "text/css";
+	if (path.ends_with(".js")) return "application/javascript";
+	if (path.ends_with(".png")) return "image/png";
+	if (path.ends_with(".jpg") || path.ends_with(".jpeg")) return "image/jpeg";
+	if (path.ends_with(".gif")) return "image/gif";
+	if (path.ends_with(".svg")) return "image/svg+xml";
+	if (path.ends_with(".flac")) return "audio/flac";
+	if (path.ends_with(".ogg")) return "audio/ogg";
+	return "application/octet-stream";
+}
+
 
