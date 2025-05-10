@@ -13,9 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Run make
-      run: make
-    - name:
+    - name: run make
+      run: make release
+    - name: upload
       uses: actions/upload-artifact@v4
       with:
         name: kizuna
