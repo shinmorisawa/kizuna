@@ -20,6 +20,7 @@ std::string File::getFile(std::string path) {
 
 	std::stringstream buf;
 	buf << file.rdbuf();
+	file.close();
 	return buf.str();
 }
 
