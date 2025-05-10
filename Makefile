@@ -21,6 +21,8 @@ release: $(TARGET)
 upx: $(TARGET)
 	upx -9 --ultra-brute $(TARGET)
 
+ultra: release upx
+
 $(TARGET): $(OBJS) $(APP_OBJS)
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(OBJS) $(APP_OBJS) -o $@
