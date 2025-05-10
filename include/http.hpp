@@ -27,6 +27,7 @@ namespace HTTP {
 				version = "HTTP/1.1";
 				headers["Content-Length"] = std::to_string(body.size());
 				headers["Content-Type"] = "text/plain";
+				headers["Server"] = "kizuna/0.0.1-prealpha";
 			}
 
 			std::string toString() const {
