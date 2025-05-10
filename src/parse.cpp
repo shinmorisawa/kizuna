@@ -25,14 +25,17 @@ HTTP::Request HTTP::parseRequest(std::string request) {
 	/* TODO: implement parser (80% done) */
 	HTTP::Request parsed_request;
 
+	std::cout << request_line << std::endl;
+
 	end = request_line.find(" ");
 	parsed_request.method = request_line.substr(0, end);
-	request_line.erase(0, end);
+	request_line.erase(0, end + 1);
 	end = request_line.find(" ");
 	parsed_request.path = request_line.substr(0, end);
-	request_line.erase(0, end);
+	request_line.erase(0, end + 1);
 	end = request_line.find("\r\n");
 	parsed_request.version = request_line.substr(0, end);
+	std::cout << parsed_request.method << "a" << parsed_request.path << "b" << parsed_request.version << "c" << std::endl;
 
 	/* don't ask me how it works it's just black magic */
 	std::map<std::string, std::string> headers;	
