@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Iapp/include -Iinclude -Wall -Wextra -Os -flto -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions
+CXXFLAGS := -Iapp/include -Iinclude -Wall -Wextra -Os -flto
 
 SRC_DIR := src
 OBJ_DIR := obj
@@ -14,6 +14,9 @@ SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
 all: $(TARGET)
+
+release: $(TARGET)
+	strip $(TARGET)
 
 $(TARGET): $(OBJS) $(APP_OBJS)
 	@mkdir -p $(BUILD_DIR)
