@@ -18,8 +18,6 @@ std::string File::getTextFile(std::string path) {
 		return "failed";
 	}
 
-	std::cout << path << std::endl;
-
 	std::stringstream buf;
 	buf << file.rdbuf();
 	return buf.str();
