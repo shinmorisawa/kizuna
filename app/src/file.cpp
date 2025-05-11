@@ -14,7 +14,6 @@ std::string File::getFile(std::string path) {
 	std::ifstream file(full_path);
 
 	if (!file) {
-		std::cout << "couldn't open file " << full_path << std::endl;
 		return "failed";
 	}
 

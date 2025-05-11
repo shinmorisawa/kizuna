@@ -1,0 +1,12 @@
+* {
+	font-family: Quicksand, Arial, sans-serif;
+}
+
+body {
+	margin: 0;
+	padding: 20px;
+}
+
+a:hover {
+	color: red;
+}

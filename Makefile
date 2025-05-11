@@ -6,6 +6,7 @@ OBJ_DIR := obj
 APP_SRC_DIR := app/src
 APP_OBJ_DIR := app/obj
 BUILD_DIR := build
+ASSET_DIR := asset
 TARGET := $(BUILD_DIR)/kizuna
 
 APP_SRCS := $(wildcard $(APP_SRC_DIR)/*.cpp)
@@ -39,6 +40,11 @@ $(APP_OBJ_DIR)/%.o: $(APP_SRC_DIR)/%.cpp
 clean:
 	rm -rf $(OBJ_DIR) $(BUILD_DIR)
 	rm -rf $(APP_OBJ_DIR)
+
+install:
+	@mkdir -p /var/www/kizuna
+	cp ./$(TARGET) /usr/local/bin
+	cp -r ./$(ASSET_DIR) /var/www/kizuna
 
 .PHONY: all clean
 
