@@ -18,9 +18,10 @@ void Socket::startAcceptingClients(int serverSocket) {
 
 			recv(clientSocket, buffer, sizeof(buffer), 0);
 			std::string request(buffer);
-
+			
+			HTTP::Response response;
 			HTTP::Request parsed_request = HTTP::parseRequest(request);
-			HTTP::Response response = App::returnResponse(parsed_request);
+			if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request); }
 			std::string raw = response.toString();
 
 			send(clientSocket, raw.c_str(), raw.size(), 0);
@@ -35,7 +36,7 @@ void Socket::initSocket() {
 
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_port = htons(20220);
+	serverAddress.sin_port = htons(2929);
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 
 	bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));

@@ -16,6 +16,9 @@ HTTP::Response App::returnResponse(HTTP::Request request) {
 	if (response.body == "failed") {
 		response.status_code = 404;
 		response.status_text = "Not Found";
+		response.body = File::getFile("/404.html");
+		response.headers["Content-Length"] = std::to_string(response.body.size());
+		response.headers["Content-Type"] = File::getMIMEType("/404.html");
 	}
 
 	return response;
