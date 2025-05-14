@@ -23,6 +23,16 @@ std::string File::getFile(std::string path) {
 	return buf.str();
 }
 
+std::string File::saveFile(std::string path, std::string data, std::string mimeType) {
+	if (data.empty()) { std::cout << "data is empty!!" << std::endl; return "failed"; }
+
+	fs::path full_path = base_path / path;
+	std::ofstream file(full_path);
+
+	file.write(data.c_str(), sizeof(data.data()));
+	return "success";
+}
+
 std::string File::getMIMEType(std::string path) {
 	/* text/ */
 	if (path.ends_with(".htm")) return "text/html";

@@ -22,6 +22,20 @@ void Socket::startAcceptingClients(int serverSocket) {
 			HTTP::Response response;
 			HTTP::Request parsed_request = HTTP::parseRequest(request);
 			if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request); }
+			if (parsed_request.method == "POST") {
+				int size = std::stoi(parsed_request.headers["Content-Length"]);
+				int bytesReceived = 0;
+
+				while (bytesReceived <= size) {
+					recv(clientSocket, buffer, sizeof(buffer), 0);
+					parsed_request.body.append(buffer, 16384);
+					bytesReceived += 16384;
+				}
+
+				App::handlePost(parsed_request);
+				response = App::returnResponse(parsed_request);
+			}
+
 			std::string raw = response.toString();
 
 			send(clientSocket, raw.c_str(), raw.size(), 0);

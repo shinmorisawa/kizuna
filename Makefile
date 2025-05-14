@@ -44,7 +44,7 @@ clean:
 install:
 	@mkdir -p /var/www/kizuna
 	cp ./$(TARGET) /usr/local/bin
-	cp -r ./$(ASSET_DIR) /var/www/kizuna
+	cp -r ./$(ASSET_DIR)/* /var/www/kizuna
 
 .PHONY: all clean
 

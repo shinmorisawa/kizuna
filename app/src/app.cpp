@@ -29,3 +29,5 @@ HTTP::Response App::returnResponse(HTTP::Request request) {
 
 	return response;
 }
+
+void App::handlePost(HTTP::Request request) { }
