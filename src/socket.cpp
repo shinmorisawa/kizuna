@@ -25,13 +25,18 @@ void Socket::startAcceptingClients(int serverSocket) {
 			if (parsed_request.method == "POST") {
 				int size = std::stoi(parsed_request.headers["Content-Length"]);
 				int bytesReceived = 0;
+				int bytesRead = 0;
 
-				while (bytesReceived <= size) {
-					recv(clientSocket, buffer, sizeof(buffer), 0);
-					parsed_request.body.append(buffer, 16384);
-					bytesReceived += 16384;
+				while (bytesReceived < size) {
+					bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
+					std::cout << bytesRead << std::endl;
+					if (bytesRead <= 0) break;
+					parsed_request.body.append(buffer, bytesRead);
+					bytesReceived += bytesRead;
+					std::cout << bytesReceived << std::endl;
 				}
-
+				
+				parsed_request.body.shrink_to_fit();
 				App::handlePost(parsed_request);
 				response = App::returnResponse(parsed_request);
 			}

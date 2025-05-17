@@ -11,7 +11,7 @@ std::string File::getFile(std::string path) {
 	if (!path.empty() && path[0] == '/') path = path.substr(1);
 	fs::path full_path = base_path / path;
 
-	std::ifstream file(full_path);
+	std::ifstream file(full_path, std::ios::binary);
 
 	if (!file) {
 		return "failed";
@@ -23,15 +23,27 @@ std::string File::getFile(std::string path) {
 	return buf.str();
 }
 
-std::string File::saveFile(std::string path, std::string data, std::string mimeType) {
+std::string File::saveFile(std::string path, std::string data) {
+	if (!path.empty() && path[0] == '/') path = path.substr(1);
 	if (data.empty()) { std::cout << "data is empty!!" << std::endl; return "failed"; }
 
 	fs::path full_path = base_path / path;
-	std::ofstream file(full_path);
+	std::ofstream file(full_path, std::ios::binary | std::ios::trunc);
 
-	file.write(data.c_str(), sizeof(data.data()));
+	file.write(data.c_str(), data.size());
 	return "success";
 }
+
+std::string File::clearFile(std::string path) {
+	if (!path.empty() && path[0] == '/') path = path.substr(1);
+	if (path.empty()) { std::cout << "bro, don't rm -rf the /var/www/kizuna :sob:" << std::endl; return "failed"; }
+
+	fs::path full_path = base_path / path;
+	std::ofstream file(full_path, std::ios::trunc);
+	
+	return "success";
+}
+
 
 std::string File::getMIMEType(std::string path) {
 	/* text/ */
