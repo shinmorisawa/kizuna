@@ -7,7 +7,7 @@
 HTTP::Response App::returnResponse(HTTP::Request request) {
 	HTTP::Response response(200, "OK", "");
 	std::string path = request.path;
-	if (path == "/" || path == "/upload/png") {
+	if (path == "/" || path == "/upload/img") {
 		path = "/index.html";
 	}
 	response.body = File::getFile(path);
@@ -32,17 +32,30 @@ HTTP::Response App::returnResponse(HTTP::Request request) {
 }
 
 void App::handlePost(HTTP::Request request) {
-	if (request.headers["Content-Type"] == "image/png") {
-		if (request.path != "/upload/png") { return; }
-		std::string lastImageID = File::getFile("/.id-png");
-		std::string imageID = Name::incrementBase62(lastImageID);
-		if (File::clearFile("/.id-png") == "failed") { std::cout << "error clearing file" << std::endl; return; }
-		if (File::saveFile("/.id-png", imageID) == "failed") { std::cout << "error writing to /.id" << std::endl; return; }
-		std::string path = "/assets/";
-		if (File::saveFile(path.append(imageID).append(".png"), request.body) == "success") {
-			std::cout << "saved file to " << "/assets/" << imageID << ".png" << std::endl;
-		} else {
-			std::cout << "it failed lol" << std::endl;
-		}	
+	if (request.path == "/upload/img") {
+		if (request.headers["Content-Type"] == "image/png") {	
+			std::string lastImageID = File::getFile("/.id-png");
+			std::string imageID = Name::incrementBase62(lastImageID);
+			if (File::clearFile("/.id-png") == "failed") { std::cout << "error clearing file" << std::endl; return; }
+			if (File::saveFile("/.id-png", imageID) == "failed") { std::cout << "error writing to /.id" << std::endl; return; }
+			std::string path = "/assets/";
+			if (File::saveFile(path.append(imageID).append(".png"), request.body) == "success") {
+				std::cout << "saved file to " << "/assets/" << imageID << ".png" << std::endl;
+			} else {
+				std::cout << "it failed lol" << std::endl;
+			}	
+		} 
+		if (request.headers["Content-Type"] == "image/jpeg") {	
+			std::string lastImageID = File::getFile("/.id-jpeg");
+			std::string imageID = Name::incrementBase62(lastImageID);
+			if (File::clearFile("/.id-jpeg") == "failed") { std::cout << "error clearing file" << std::endl; return; }
+			if (File::saveFile("/.id-jpeg", imageID) == "failed") { std::cout << "error writing to /.id" << std::endl; return; }
+			std::string path = "/assets/";
+			if (File::saveFile(path.append(imageID).append(".jpg"), request.body) == "success") {
+				std::cout << "saved file to " << "/assets/" << imageID << ".jpg" << std::endl;
+			} else {
+				std::cout << "it failed lol" << std::endl;
+			}	
+		}
 	}
 }
