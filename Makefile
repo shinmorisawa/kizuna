@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Iapp/include -Iinclude -Wall -Wextra -O0 -flto -std=c++23
+CXXFLAGS := -Iapp/include -Iinclude -Wall -Wextra -O3 -flto -std=c++23
 
 SRC_DIR := src
 OBJ_DIR := obj
