@@ -4,23 +4,43 @@
 #include "http.hpp"
 
 HTTP::Request HTTP::parseRequest(std::string request) {
+	HTTP::Request blank;
+	blank.method = "GET";
+	blank.path = "/";
+	blank.version = "HTTP/1.1";
+	blank.headers["Redirect"] = "blank";
+	blank.body = "";
+	blank.ip = nullptr;
+
 	/* sorry for being esoteric 
 	 * this top one is for the request line */
 	std::string request_line = request;
 	std::string::size_type end = request_line.find("\r\n");
-	request_line = request_line.substr(0, end);
+	if (request_line.size() > 1) {
+		request_line = request_line.substr(0, end);
+	} else {
+		return blank;
+	}
 
 	/* request headers */
 	std::string request_headers = request;
 	std::string::size_type beg = request_headers.find("\r\n");
 	end = request_headers.find("\r\n\r\n");
-	request_headers = request_headers.substr(beg+2, end-4);
+	if (request_headers.size() > 1) {
+		request_headers = request_headers.substr(beg+2, end-4);
+	} else {
+		return blank;
+	}
 
 	/* request body */
 	std::string request_body = request;
 	beg = request_body.find("\r\n\r\n");
 	end = request_body.find('\0');
-	request_body = request_body.substr(beg+4, end);
+	if (request_body.size() > 1) {
+		request_body = request_body.substr(beg+4, end);
+	} else {
+		return blank;
+	}
 
 	/* parser */
 	HTTP::Request parsed_request;
