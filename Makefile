@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Iapp/include -Iinclude -Wall -Wextra -O3 -flto -std=c++23
+CXXFLAGS := -Ilib/openssl/build/include -Iapp/include -Iinclude -Wall -Wextra -O3 -flto -std=c++23
 
 SRC_DIR := src
 OBJ_DIR := obj
@@ -7,6 +7,7 @@ APP_SRC_DIR := app/src
 APP_OBJ_DIR := app/obj
 BUILD_DIR := build
 ASSET_DIR := asset
+LIBS := lib/openssl/build/libssl.a lib/openssl/build/libcrypto.a
 TARGET := $(BUILD_DIR)/kizuna
 
 APP_SRCS := $(wildcard $(APP_SRC_DIR)/*.cpp)
@@ -26,7 +27,7 @@ ultra: release upx
 
 $(TARGET): $(OBJS) $(APP_OBJS)
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(OBJS) $(APP_OBJS) -o $@
+	$(CXX) $(CXXFLAGS) $(OBJS) $(APP_OBJS) -o $@ $(LIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(OBJ_DIR)
@@ -43,6 +44,8 @@ clean:
 
 install:
 	@mkdir -p /var/www/kizuna
+	@mkdir -p /etc/kizuna
+	@mkdir -p /etc/kizuna/ssl
 	cp ./$(TARGET) /usr/local/bin
 	cp -r ./$(ASSET_DIR)/* /var/www/kizuna
 
