@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -Ilib/openssl/build/include -Iapp/include -Iinclude -Wall -Wextra -O3 -flto -std=c++23
+CXXFLAGS := -I/usr/include/ -Ilib/openssl/build/include -Iapp/include -Iinclude -Wall -Wextra -O3 -flto -std=c++23
 LDFLAGS := -lssl -lcrypto
 
 SRC_DIR := src
