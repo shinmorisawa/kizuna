@@ -1,5 +1,6 @@
 CXX := g++
 CXXFLAGS := -Ilib/openssl/build/include -Iapp/include -Iinclude -Wall -Wextra -O3 -flto -std=c++23
+LDFLAGS := -lssl -lcrypto
 
 SRC_DIR := src
 OBJ_DIR := obj
@@ -27,7 +28,7 @@ ultra: release upx
 
 $(TARGET): $(OBJS) $(APP_OBJS)
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(OBJS) $(APP_OBJS) -o $@ $(LIBS)
+	$(CXX) $(LDFLAGS) $(OBJS) $(APP_OBJS) -o $@ $(LIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(OBJ_DIR)
