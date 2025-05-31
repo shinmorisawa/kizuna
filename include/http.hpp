@@ -42,4 +42,5 @@ namespace HTTP {
 	};
 
 	Request parseRequest(std::string request);
+	std::string URLDecode(const std::string& str);
 }

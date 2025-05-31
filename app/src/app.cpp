@@ -15,6 +15,14 @@ HTTP::Response App::returnResponse(HTTP::Request request) {
 	response.headers["Content-Length"] = std::to_string(response.body.size());
 	response.headers["Content-Type"] = File::getMIMEType(path);
 
+	if (request.headers["Malformed"] == "yes, please") {
+		response.status_code = 400;
+		response.status_text = "Bad Request";
+		response.body = File::getFile("/400.html");
+		response.headers["Content-Length"] = std::to_string(response.body.size());
+		response.headers["Content-Type"] = File::getMIMEType("/400.html");
+	}
+
 	if (response.body == "failed") {
 		response.status_code = 404;
 		response.status_text = "Not Found";
