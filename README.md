@@ -7,8 +7,10 @@ features
 - web server
 - parser
 - api
+- tls/ssl (via openssl)
 
 ## building
+#### deps
 all u need is openssl, just grab it from ur distro's repos
 #### actually buliding
 ```
