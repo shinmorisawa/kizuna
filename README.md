@@ -7,3 +7,16 @@ features
 - web server
 - parser
 - api
+
+## building
+all u need is openssl, just grab it from ur distro's repos
+#### actually buliding
+```
+git clone https://github.com/shinmorisawa/kizuna
+cd kizuna
+make
+./build/kizuna
+```
+optional, but recommended:  
+`sudo make install`  
+and now u can run kizuna with `kizuna`!
