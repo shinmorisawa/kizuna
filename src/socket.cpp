@@ -28,7 +28,7 @@ void Socket::startAcceptingClients(int serverSocket) {
 			HTTP::Response response;
 			HTTP::Request parsed_request = HTTP::parseRequest(request);
 			parsed_request.ip = ip;
-			if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request); }
+			if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request, 0); }
 			if (parsed_request.method == "POST") {
 				int size = std::stoi(parsed_request.headers["Content-Length"]);
 				int bytesReceived = 0;
@@ -45,9 +45,9 @@ void Socket::startAcceptingClients(int serverSocket) {
 				
 				parsed_request.body.shrink_to_fit();
 				App::handlePost(parsed_request);
-				response = App::returnResponse(parsed_request);
+				response = App::returnResponse(parsed_request, 0);
 			}
-			if (parsed_request.method == "BREW") { response = App::returnResponse(parsed_request); }
+			if (parsed_request.method == "BREW") { response = App::returnResponse(parsed_request, 0); }
 		
 			std::string raw = response.toString();
 
@@ -87,7 +87,7 @@ void Socket::startAcceptingTLSClients(SSL_CTX* ctx, int serverSocket) {
 			HTTP::Response response;
 			HTTP::Request parsed_request = HTTP::parseRequest(request);
 			parsed_request.ip = ip;
-			if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request); }
+			if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request, 1); }
 			if (parsed_request.method == "POST") {
 				int size = std::stoi(parsed_request.headers["Content-Length"]);
 				int bytesReceived = 0;
@@ -104,7 +104,7 @@ void Socket::startAcceptingTLSClients(SSL_CTX* ctx, int serverSocket) {
 				
 				parsed_request.body.shrink_to_fit();
 				App::handlePost(parsed_request);
-				response = App::returnResponse(parsed_request);
+				response = App::returnResponse(parsed_request, 1);
 			}
 		
 			std::string raw = response.toString();

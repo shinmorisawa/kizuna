@@ -3,13 +3,9 @@
 #include "http.hpp"
 #include "app.hpp"
 
-HTTP::Response App::returnResponse(HTTP::Request request) {
+HTTP::Response App::returnResponse(HTTP::Request request, int isTLS) {
 	HTTP::Response response(200, "OK", "");
 	std::string path = request.path;
-	
-	if (path == "/") {
-		path = "/index.html";
-	}
 
 	if (request.method == "BREW") {
 		response.body = "i'm a teapot";
@@ -23,6 +19,17 @@ HTTP::Response App::returnResponse(HTTP::Request request) {
 		std::cout << "someone tried to brew coffee :(" << std::endl;
 
 		return response;
+	}
+
+	if (isTLS != 1) {
+		HTTP::Response moved(301, "Moved Permanently", "");
+		std::string host = request.headers["Host"];
+		moved.headers["Location"] = "https://" + host + request.path;
+		return moved;
+	}
+
+	if (path == "/") {
+		path = "/index.html";
 	}
 
 	response.body = File::getFile(path);

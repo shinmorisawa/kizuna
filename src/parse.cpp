@@ -49,10 +49,12 @@ HTTP::Request HTTP::parseRequest(std::string request) {
 	end = request_line.find(" ");
 	parsed_request.method = request_line.substr(0, end);
 	request_line.erase(0, end + 1);
+
 	end = request_line.find(" ");
 	parsed_request.path = request_line.substr(0, end);
 	parsed_request.path = HTTP::URLDecode(parsed_request.path);
 	request_line.erase(0, end + 1);
+	
 	end = request_line.find("\r\n");
 	parsed_request.version = request_line.substr(0, end);
 
