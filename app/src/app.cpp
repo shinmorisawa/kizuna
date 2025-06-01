@@ -11,6 +11,20 @@ HTTP::Response App::returnResponse(HTTP::Request request) {
 		path = "/index.html";
 	}
 
+	if (request.method == "BREW") {
+		response.body = "i'm a teapot";
+		response.headers["Content-Length"] = "12";
+		response.headers["Content-Type"] = "tea/pot";
+		response.headers["Caffeine-Content"] = "2mg";
+		response.headers["Milk"] = "denied";
+		response.headers["Honey"] = "what the fuck is wrong with you";
+		response.status_code = 418;
+		response.status_text = "I'm a teapot";
+		std::cout << "someone tried to brew coffee :(" << std::endl;
+
+		return response;
+	}
+
 	response.body = File::getFile(path);
 	response.headers["Content-Length"] = std::to_string(response.body.size());
 	response.headers["Content-Type"] = File::getMIMEType(path);

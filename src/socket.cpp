@@ -47,6 +47,7 @@ void Socket::startAcceptingClients(int serverSocket) {
 				App::handlePost(parsed_request);
 				response = App::returnResponse(parsed_request);
 			}
+			if (parsed_request.method == "BREW") { response = App::returnResponse(parsed_request); }
 		
 			std::string raw = response.toString();
 

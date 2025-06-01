@@ -60,7 +60,7 @@ HTTP::Request HTTP::parseRequest(std::string request) {
 	if (parsed_request.version != "HTTP/1.1") {
 		return wrong;
 	}
-	if (parsed_request.method != "GET" && parsed_request.method != "POST") {
+	if (parsed_request.method != "GET" && parsed_request.method != "POST" && parsed_request.method != "BREW") {
 		return wrong;
 	}
 	/* don't ask me how it works it's just black magic */
