@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sys/select.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -11,112 +12,133 @@
 #include "openssl/ssl.h"
 #include "openssl/err.h"
 
+fd_set readfds;
+int maxfd;
+int maxfdTLS;
+
 void Socket::startAcceptingClients(int serverSocket) {
-	while (true) {	
+	while (true) {
+		FD_ZERO(&readfds);
+		FD_SET(serverSocket, &readfds);
+
 		sockaddr_in clientAddr;
-		socklen_t clientLen = sizeof(clientAddr);		
-		int clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientLen);
-		
-		std::thread([clientSocket, clientAddr]() {
-			char ip[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
-		
-			char buffer[16384];
-			recv(clientSocket, buffer, sizeof(buffer), 0);
-			std::string request(buffer);
+		socklen_t clientLen = sizeof(clientAddr);
+		int wait = select(maxfd + 1, &readfds, nullptr, nullptr, nullptr);
+		if (wait > 0 && FD_ISSET(serverSocket, &readfds)) {
+			int clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientLen);
+	
+			std::thread([clientSocket, clientAddr]() {
+				char ip[INET_ADDRSTRLEN];
+				inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
 			
-			HTTP::Response response;
-			HTTP::Request parsed_request = HTTP::parseRequest(request);
-			parsed_request.ip = ip;
-			if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request, 0); }
-			if (parsed_request.method == "POST") {
-				int size = std::stoi(parsed_request.headers["Content-Length"]);
-				int bytesReceived = 0;
-				int bytesRead = 0;
-		
-				while (bytesReceived < size) {
-					bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
-					std::cout << bytesRead << std::endl;
-					if (bytesRead <= 0) break;
-					parsed_request.body.append(buffer, bytesRead);
-					bytesReceived += bytesRead;
-					std::cout << bytesReceived << std::endl;
-				}
+				char buffer[16384];
+				recv(clientSocket, buffer, sizeof(buffer), 0);
+				std::string request(buffer);
 				
-				parsed_request.body.shrink_to_fit();
-				App::handlePost(parsed_request);
-				response = App::returnResponse(parsed_request, 0);
-			}
-			if (parsed_request.method == "BREW") { response = App::returnResponse(parsed_request, 0); }
-		
-			std::string raw = response.toString();
-
-			send(clientSocket, raw.c_str(), raw.size(), 0);
-
-			std::string().swap(raw);
-		
-			close(clientSocket);
-		}).detach();
+				HTTP::Response response;
+				HTTP::Request parsed_request = HTTP::parseRequest(request);
+				parsed_request.ip = ip;
+				if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request, 0); }
+				if (parsed_request.method == "POST") {
+					int size = std::stoi(parsed_request.headers["Content-Length"]);
+					int bytesReceived = 0;
+					int bytesRead = 0;
+			
+					while (bytesReceived < size) {
+						bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
+						std::cout << bytesRead << std::endl;
+						if (bytesRead <= 0) break;
+						parsed_request.body.append(buffer, bytesRead);
+						bytesReceived += bytesRead;
+						std::cout << bytesReceived << std::endl;
+					}
+					
+					parsed_request.body.shrink_to_fit();
+					App::handlePost(parsed_request);
+					response = App::returnResponse(parsed_request, 0);
+				}
+				if (parsed_request.method == "BREW") { response = App::returnResponse(parsed_request, 0); }
+			
+				std::string raw = response.toString();
+	
+				send(clientSocket, raw.c_str(), raw.size(), 0);
+	
+				std::string().swap(raw);
+			
+				close(clientSocket);
+			}).detach();
+		} else {
+			continue;
+		}
 	}
 }
 
 void Socket::startAcceptingTLSClients(SSL_CTX* ctx, int serverSocket) {
-	while (true) {	
-		sockaddr_in clientAddr;
-		socklen_t clientLen = sizeof(clientAddr);		
-		int clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientLen);
-		
-		std::thread([clientSocket, clientAddr, ctx]() {
-			char ip[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
-		
-			SSL *ssl = SSL_new(ctx);
-			SSL_set_fd(ssl, clientSocket);
+	while (true) {
+		FD_ZERO(&readfds);
+		FD_SET(serverSocket, &readfds);
 
-			if (SSL_accept(ssl) <= 0) {
-				ERR_print_errors_fp(stderr);
+		sockaddr_in clientAddr;
+		socklen_t clientLen = sizeof(clientAddr);
+		int wait = select(maxfdTLS + 1, &readfds, nullptr, nullptr, nullptr);
+		if (wait > 0 && FD_ISSET(serverSocket, &readfds)) {
+			int clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientLen);
+	
+			std::thread([clientSocket, clientAddr, ctx]() {
+				char ip[INET_ADDRSTRLEN];
+				inet_ntop(AF_INET, &(clientAddr.sin_addr), ip, INET_ADDRSTRLEN);
+			
+				SSL *ssl = SSL_new(ctx);
+				SSL_set_fd(ssl, clientSocket);
+	
+				if (SSL_accept(ssl) <= 0) {
+					ERR_print_errors_fp(stderr);
+					SSL_free(ssl);
+					close(clientSocket);
+					return;
+				}
+	
+				char buffer[16384];
+				SSL_read(ssl, buffer, sizeof(buffer));
+				std::string request(buffer);
+				
+				HTTP::Response response;
+				HTTP::Request parsed_request = HTTP::parseRequest(request);
+				parsed_request.ip = ip;
+				if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request, 1); }
+				if (parsed_request.method == "POST") {
+					int size = std::stoi(parsed_request.headers["Content-Length"]);
+					int bytesReceived = 0;
+					int bytesRead = 0;
+			
+					while (bytesReceived < size) {
+						bytesRead = SSL_read(ssl, buffer, sizeof(buffer));
+						std::cout << bytesRead << std::endl;
+						if (bytesRead <= 0) break;
+						parsed_request.body.append(buffer, bytesRead);
+						bytesReceived += bytesRead;
+						std::cout << bytesReceived << std::endl;
+					}
+					
+					parsed_request.body.shrink_to_fit();
+					App::handlePost(parsed_request);
+					response = App::returnResponse(parsed_request, 1);
+				}
+				if (parsed_request.method == "BREW") { response = App::returnResponse(parsed_request, 1); }
+			
+				std::string raw = response.toString();
+	
+				SSL_write(ssl, raw.c_str(), raw.size());
+	
+				std::string().swap(raw);
+			
+				SSL_shutdown(ssl);
 				SSL_free(ssl);
 				close(clientSocket);
-				return;
-			}
-
-			char buffer[16384];
-			SSL_read(ssl, buffer, sizeof(buffer));
-			std::string request(buffer);
-			
-			HTTP::Response response;
-			HTTP::Request parsed_request = HTTP::parseRequest(request);
-			parsed_request.ip = ip;
-			if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request, 1); }
-			if (parsed_request.method == "POST") {
-				int size = std::stoi(parsed_request.headers["Content-Length"]);
-				int bytesReceived = 0;
-				int bytesRead = 0;
-		
-				while (bytesReceived < size) {
-					bytesRead = SSL_read(ssl, buffer, sizeof(buffer));
-					std::cout << bytesRead << std::endl;
-					if (bytesRead <= 0) break;
-					parsed_request.body.append(buffer, bytesRead);
-					bytesReceived += bytesRead;
-					std::cout << bytesReceived << std::endl;
-				}
-				
-				parsed_request.body.shrink_to_fit();
-				App::handlePost(parsed_request);
-				response = App::returnResponse(parsed_request, 1);
-			}
-		
-			std::string raw = response.toString();
-
-			SSL_write(ssl, raw.c_str(), raw.size());
-
-			std::string().swap(raw);
-		
-			SSL_shutdown(ssl);
-			SSL_free(ssl);
-			close(clientSocket);
-		}).detach();
+			}).detach();
+		} else {
+			continue;
+		}
 	}
 }
 
@@ -130,7 +152,9 @@ void Socket::initSocket() {
 
 	bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
 	listen(serverSocket, 5);
-	
+
+	maxfd = serverSocket;
+
 	Socket::startAcceptingClients(serverSocket);
 }
 
@@ -147,6 +171,8 @@ void Socket::initTLSSocket() {
 
 	SSL_CTX* ctx = createContext();
 	configureContext(ctx);
+
+	maxfdTLS = serverSocket;
 
 	Socket::startAcceptingTLSClients(ctx, serverSocket);
 }

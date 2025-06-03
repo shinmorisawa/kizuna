@@ -11,7 +11,9 @@ int main() {
 	std::thread([]() { Socket::initTLSSocket(); }).detach();
 	std::thread([]() { Socket::initSocket();    }).detach();
 
-	while (true) {}
+	while (true) {
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+	}
 
 	return 0;
 }
