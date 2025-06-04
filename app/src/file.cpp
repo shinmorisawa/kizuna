@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <vector>
 #include "file.hpp"
 
 namespace fs = std::filesystem;
@@ -21,6 +22,49 @@ std::string File::getFile(std::string path) {
 	buf << file.rdbuf();
 	file.close();
 	return buf.str();
+}
+
+int File::sizeOfFile(std::string path) {
+	if (!path.empty() && path[0] == '/') path = path.substr(1);
+	fs::path full_path = base_path / path;
+
+	std::ifstream file(full_path, std::ios::binary);
+
+	std::streampos pos = file.tellg();
+	return static_cast<int>(pos);
+}
+
+
+std::vector<std::string> File::getThingsInFolder(std::string path) {
+	if (!path.empty() && path[0] == '/') path = path.substr(1);
+	fs::path full_path = base_path / path;
+	std::vector<std::string> things;
+
+	for (const auto& thing : fs::directory_iterator(full_path)) {
+		things.push_back(thing.path().filename());
+	}
+	
+	return things;
+}
+
+bool File::isDirectory(std::string path) {
+	if (!path.empty() && path[0] == '/') path = path.substr(1);
+	fs::path full_path = base_path / path;
+
+	if (fs::is_directory(full_path)) return true;
+	return false;
+}
+
+std::string File::getChunkFromFile(std::string path, int chunk) {
+	if (!path.empty() && path[0] == '/') path = path.substr(1);
+	fs::path full_path = base_path / path;
+	std::ifstream file(full_path, std::ios::binary);
+	std::string response;
+	response.resize(4096);
+	int chunkOffset = chunk * 4096;
+	file.seekg(chunkOffset, std::ios::beg);
+	file.read(&response[0], 4096);
+	return response;
 }
 
 std::string File::getMIMEType(std::string path) {
@@ -108,5 +152,4 @@ std::string File::getMIMEType(std::string path) {
 	/* anything else */
 	return "application/octet-stream";
 }
-
 

@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <string>
 #include <thread>
+#include <cmath>
 #include "http.hpp"
 #include "socket.hpp"
 #include "app.hpp"
@@ -105,36 +106,47 @@ void Socket::startAcceptingTLSClients(SSL_CTX* ctx, int serverSocket) {
 				HTTP::Response response;
 				HTTP::Request parsed_request = HTTP::parseRequest(request);
 				parsed_request.ip = ip;
-				if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request, 1); }
-				if (parsed_request.method == "POST") {
-					int size = std::stoi(parsed_request.headers["Content-Length"]);
-					int bytesReceived = 0;
-					int bytesRead = 0;
-			
-					while (bytesReceived < size) {
-						bytesRead = SSL_read(ssl, buffer, sizeof(buffer));
-						std::cout << bytesRead << std::endl;
-						if (bytesRead <= 0) break;
-						parsed_request.body.append(buffer, bytesRead);
-						bytesReceived += bytesRead;
-						std::cout << bytesReceived << std::endl;
+				int size = App::sizeOfResponse(parsed_request, 1);
+				if (size >= 4096) {
+					if (parsed_request.method == "GET") {
+						int chunks = (size / 4096) + 1;
+						for (int i = 0; i < chunks; i++) {
+							std::string chunk = App::returnChunkResponse(parsed_request, 1, i);
+							SSL_write(ssl, chunk.c_str(), chunk.size());
+						}
 					}
-					
-					parsed_request.body.shrink_to_fit();
-					App::handlePost(parsed_request);
-					response = App::returnResponse(parsed_request, 1);
+				} else {
+					if (parsed_request.method == "GET") { response = App::returnResponse(parsed_request, 1); }
+					if (parsed_request.method == "POST") {
+						int size = std::stoi(parsed_request.headers["Content-Length"]);
+						int bytesReceived = 0;
+						int bytesRead = 0;
+				
+						while (bytesReceived < size) {
+							bytesRead = SSL_read(ssl, buffer, sizeof(buffer));
+							std::cout << bytesRead << std::endl;
+							if (bytesRead <= 0) break;
+							parsed_request.body.append(buffer, bytesRead);
+							bytesReceived += bytesRead;
+							std::cout << bytesReceived << std::endl;
+						}
+						
+						parsed_request.body.shrink_to_fit();
+						App::handlePost(parsed_request);
+						response = App::returnResponse(parsed_request, 1);
+					}
+					if (parsed_request.method == "BREW") { response = App::returnResponse(parsed_request, 1); }
+				
+					std::string raw = response.toString();
+		
+					SSL_write(ssl, raw.c_str(), raw.size());
+		
+					std::string().swap(raw);
+				
+					SSL_shutdown(ssl);
+					SSL_free(ssl);
+					close(clientSocket);
 				}
-				if (parsed_request.method == "BREW") { response = App::returnResponse(parsed_request, 1); }
-			
-				std::string raw = response.toString();
-	
-				SSL_write(ssl, raw.c_str(), raw.size());
-	
-				std::string().swap(raw);
-			
-				SSL_shutdown(ssl);
-				SSL_free(ssl);
-				close(clientSocket);
 			}).detach();
 		} else {
 			continue;
