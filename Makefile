@@ -8,7 +8,6 @@ APP_SRC_DIR := app/src
 APP_OBJ_DIR := app/obj
 BUILD_DIR := build
 ASSET_DIR := asset
-LIBS := lib/openssl/build/libssl.a lib/openssl/build/libcrypto.a
 TARGET := $(BUILD_DIR)/kizuna
 
 APP_SRCS := $(wildcard $(APP_SRC_DIR)/*.cpp)
