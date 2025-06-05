@@ -11,6 +11,7 @@ fs::path base_path = "/var/www/kizuna";
 std::string File::getFile(std::string path) {
 	if (!path.empty() && path[0] == '/') path = path.substr(1);
 	fs::path full_path = base_path / path;
+	full_path = fs::weakly_canonical(full_path);
 
 	std::ifstream file(full_path, std::ios::binary);
 
@@ -27,6 +28,7 @@ std::string File::getFile(std::string path) {
 int File::sizeOfFile(std::string path) {
 	if (!path.empty() && path[0] == '/') path = path.substr(1);
 	fs::path full_path = base_path / path;
+	full_path = fs::weakly_canonical(full_path);
 
 	std::ifstream file(full_path, std::ios::binary);
 
@@ -38,6 +40,8 @@ int File::sizeOfFile(std::string path) {
 std::vector<std::string> File::getThingsInFolder(std::string path) {
 	if (!path.empty() && path[0] == '/') path = path.substr(1);
 	fs::path full_path = base_path / path;
+	full_path = fs::weakly_canonical(full_path);
+
 	std::vector<std::string> things;
 
 	for (const auto& thing : fs::directory_iterator(full_path)) {
@@ -50,6 +54,7 @@ std::vector<std::string> File::getThingsInFolder(std::string path) {
 bool File::isDirectory(std::string path) {
 	if (!path.empty() && path[0] == '/') path = path.substr(1);
 	fs::path full_path = base_path / path;
+	full_path = fs::weakly_canonical(full_path);
 
 	if (fs::is_directory(full_path)) return true;
 	return false;
@@ -58,6 +63,8 @@ bool File::isDirectory(std::string path) {
 std::string File::getChunkFromFile(std::string path, int chunk) {
 	if (!path.empty() && path[0] == '/') path = path.substr(1);
 	fs::path full_path = base_path / path;
+	full_path = fs::weakly_canonical(full_path);
+
 	std::ifstream file(full_path, std::ios::binary);
 	std::string response;
 	response.resize(4096);

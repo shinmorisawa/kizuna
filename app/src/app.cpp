@@ -49,6 +49,9 @@ HTTP::Response App::returnResponse(HTTP::Request request, int isTLS) {
 		response.body.append(path);
 		response.body.append("</title><meta charset=\"UTF-8\"/><link rel=\"stylesheet\" href=\"/styles.css\"></head>");
 		response.body.append("<body><div class=\"parent\"><div class=\"child\">");
+		response.body.append("<a class=\"light-text\" href=\"");
+		response.body.append(path);
+		response.body.append("/..\">..</a><br>");
 		for (const auto& s : things) {
 			response.body.append("<a class=\"light-text\" href=\"");
 			response.body.append(path);
@@ -132,6 +135,9 @@ int App::sizeOfResponse(HTTP::Request request, int isTLS) {
 		response.body.append(path);
 		response.body.append("</title><meta charset=\"UTF-8\"/><link rel=\"stylesheet\" href=\"/styles.css\"></head>");
 		response.body.append("<body><div class=\"parent\"><div class=\"child\">");
+		response.body.append("<a class=\"light-text\" href=\"");
+		response.body.append(path);
+		response.body.append("/..\">..</a><br>");
 		for (const auto& s : things) {
 			response.body.append("<a class=\"light-text\" href=\"");
 			response.body.append(path);
@@ -221,6 +227,9 @@ std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk
 		response.body.append(path);
 		response.body.append("</title><meta charset=\"UTF-8\"/><link rel=\"stylesheet\" href=\"/styles.css\"></head>");
 		response.body.append("<body><div class=\"parent\"><div class=\"child\">");
+		response.body.append("<a class=\"light-text\" href=\"");
+		response.body.append(path);
+		response.body.append("/..\">..</a><br>");
 		for (const auto& s : things) {
 			response.body.append("<a class=\"light-text\" href=\"");
 			response.body.append(path);
