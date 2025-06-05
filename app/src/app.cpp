@@ -62,7 +62,7 @@ HTTP::Response App::returnResponse(HTTP::Request request, int isTLS) {
 			response.body.append("</a>");
 			response.body.append("<br>");
 		}
-		response.body.append("<br/><p class=\"light-text\">kizuna/0.1.0-zenshin</p>");
+		response.body.append("<br/><p class=\"light-text\">kizuna/0.2.0-ruby-chan</p>");
 		response.body.append("</div></div></body></html");
 		response.headers["Content-Length"] = std::to_string(response.body.size());
 		response.headers["Content-Type"] = "text/html";
@@ -148,7 +148,7 @@ int App::sizeOfResponse(HTTP::Request request, int isTLS) {
 			response.body.append("</a>");
 			response.body.append("<br>");
 		}
-		response.body.append("<br/><p class=\"light-text\">kizuna/0.1.0-zenshin</p>");
+		response.body.append("<br/><p class=\"light-text\">kizuna/0.2.0-ruby-chan</p>");
 		response.body.append("</div></div></body></html");
 		response.headers["Content-Length"] = std::to_string(response.body.size());
 		response.headers["Content-Type"] = "text/html";
@@ -240,7 +240,7 @@ std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk
 			response.body.append("</a>");
 			response.body.append("<br>");
 		}
-		response.body.append("<br/><p class=\"light-text\">kizuna/0.1.0-zenshin</p>");
+		response.body.append("<br/><p class=\"light-text\">kizuna/0.2.0-ruby-chan</p>");
 		response.body.append("</div></div></body></html");
 		response.headers["Content-Length"] = std::to_string(response.body.size());
 		response.headers["Content-Type"] = "text/html";
