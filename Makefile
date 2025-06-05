@@ -46,8 +46,8 @@ install:
 	@mkdir -p /var/www/kizuna
 	@mkdir -p /etc/kizuna
 	@mkdir -p /etc/kizuna/ssl
-	cp ./$(TARGET) /usr/local/bin
 	cp -r ./$(ASSET_DIR)/* /var/www/kizuna
-
+	cp ./$(TARGET) /usr/local/bin
+	
 .PHONY: all clean
 

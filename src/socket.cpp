@@ -142,11 +142,11 @@ void Socket::startAcceptingTLSClients(SSL_CTX* ctx, int serverSocket) {
 					SSL_write(ssl, raw.c_str(), raw.size());
 		
 					std::string().swap(raw);
-				
-					SSL_shutdown(ssl);
-					SSL_free(ssl);
-					close(clientSocket);
 				}
+
+				SSL_shutdown(ssl);
+				SSL_free(ssl);
+				close(clientSocket);
 			}).detach();
 		} else {
 			continue;

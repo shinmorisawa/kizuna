@@ -47,13 +47,10 @@ HTTP::Response App::returnResponse(HTTP::Request request, int isTLS) {
 		response.body.append("<head>");
 		response.body.append("<title>index of ");
 		response.body.append(path);
-		response.body.append("</title><meta charset=\"UTF-8\"/></head>");
-		response.body.append("<body>");
-		response.body.append("<h1>index of ");
-		response.body.append(path);
-		response.body.append("</h1><br>");
+		response.body.append("</title><meta charset=\"UTF-8\"/><link rel=\"stylesheet\" href=\"/styles.css\"></head>");
+		response.body.append("<body><div class=\"parent\"><div class=\"child\">");
 		for (const auto& s : things) {
-			response.body.append("<a href=\"");
+			response.body.append("<a class=\"light-text\" href=\"");
 			response.body.append(path);
 			response.body.append("/");
 			response.body.append(s);
@@ -62,8 +59,8 @@ HTTP::Response App::returnResponse(HTTP::Request request, int isTLS) {
 			response.body.append("</a>");
 			response.body.append("<br>");
 		}
-		response.body.append("<br/><p>kizuna/0.1.0-zenshin</p>");
-		response.body.append("</body></html");
+		response.body.append("<br/><p class=\"light-text\">kizuna/0.1.0-zenshin</p>");
+		response.body.append("</div></div></body></html");
 		response.headers["Content-Length"] = std::to_string(response.body.size());
 		response.headers["Content-Type"] = "text/html";
 		return response;
@@ -133,13 +130,10 @@ int App::sizeOfResponse(HTTP::Request request, int isTLS) {
 		response.body.append("<head>");
 		response.body.append("<title>index of ");
 		response.body.append(path);
-		response.body.append("</title><meta charset=\"UTF-8\"/></head>");
-		response.body.append("<body>");
-		response.body.append("<h1>index of ");
-		response.body.append(path);
-		response.body.append("</h1><br>");
+		response.body.append("</title><meta charset=\"UTF-8\"/><link rel=\"stylesheet\" href=\"/styles.css\"></head>");
+		response.body.append("<body><div class=\"parent\"><div class=\"child\">");
 		for (const auto& s : things) {
-			response.body.append("<a href=\"");
+			response.body.append("<a class=\"light-text\" href=\"");
 			response.body.append(path);
 			response.body.append("/");
 			response.body.append(s);
@@ -148,8 +142,8 @@ int App::sizeOfResponse(HTTP::Request request, int isTLS) {
 			response.body.append("</a>");
 			response.body.append("<br>");
 		}
-		response.body.append("<br/><p>kizuna/0.1.0-zenshin</p>");
-		response.body.append("</body></html");
+		response.body.append("<br/><p class=\"light-text\">kizuna/0.1.0-zenshin</p>");
+		response.body.append("</div></div></body></html");
 		response.headers["Content-Length"] = std::to_string(response.body.size());
 		response.headers["Content-Type"] = "text/html";
 		return std::stoi(response.headers["Content-Length"]);
@@ -183,7 +177,8 @@ std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk
 	std::string path = request.path;
 
 	if (chunk > 1) {
-		File::getChunkFromFile(path, chunk);
+		std::string thingy = File::getChunkFromFile(path, chunk);
+		return thingy;
 	}
 
 	if (response.status_code == 404) {
@@ -224,13 +219,10 @@ std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk
 		response.body.append("<head>");
 		response.body.append("<title>index of ");
 		response.body.append(path);
-		response.body.append("</title><meta charset=\"UTF-8\"/></head>");
-		response.body.append("<body>");
-		response.body.append("<h1>index of ");
-		response.body.append(path);
-		response.body.append("</h1><br>");
+		response.body.append("</title><meta charset=\"UTF-8\"/><link rel=\"stylesheet\" href=\"/styles.css\"></head>");
+		response.body.append("<body><div class=\"parent\"><div class=\"child\">");
 		for (const auto& s : things) {
-			response.body.append("<a href=\"");
+			response.body.append("<a class=\"light-text\" href=\"");
 			response.body.append(path);
 			response.body.append("/");
 			response.body.append(s);
@@ -239,8 +231,8 @@ std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk
 			response.body.append("</a>");
 			response.body.append("<br>");
 		}
-		response.body.append("<br/><p>kizuna/0.1.0-zenshin</p>");
-		response.body.append("</body></html");
+		response.body.append("<br/><p class=\"light-text\">kizuna/0.1.0-zenshin</p>");
+		response.body.append("</div></div></body></html");
 		response.headers["Content-Length"] = std::to_string(response.body.size());
 		response.headers["Content-Type"] = "text/html";
 		return response.toString();
