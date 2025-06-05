@@ -45,6 +45,7 @@ img {
 a {
 	color: cyan;
 	transition: color 200ms linear;
+	text-decoration: none;
 }
 
 a:hover {
