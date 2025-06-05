@@ -107,11 +107,12 @@ void Socket::startAcceptingTLSClients(SSL_CTX* ctx, int serverSocket) {
 				HTTP::Request parsed_request = HTTP::parseRequest(request);
 				parsed_request.ip = ip;
 				int size = App::sizeOfResponse(parsed_request, 1);
+				std::string chunk;
 				if (size >= 4096) {
 					if (parsed_request.method == "GET") {
 						int chunks = (size / 4096) + 1;
 						for (int i = 0; i < chunks; i++) {
-							std::string chunk = App::returnChunkResponse(parsed_request, 1, i);
+							chunk = App::returnChunkResponse(parsed_request, 1, i);
 							SSL_write(ssl, chunk.c_str(), chunk.size());
 						}
 					}

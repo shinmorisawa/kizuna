@@ -86,6 +86,8 @@ HTTP::Request HTTP::parseRequest(std::string request) {
 	parsed_request.headers = headers;
 	parsed_request.body = request_body;
 
+	parsed_request.path = HTTP::collapseSlashes(parsed_request.path);
+
 	return parsed_request;
 }
 
@@ -104,3 +106,23 @@ std::string HTTP::URLDecode(const std::string& str) {
 	}
 	return parsed.str();
 }
+
+std::string HTTP::collapseSlashes(const std::string& path) {
+	std::string result;
+	bool prev_slash = false;
+
+	for (char ch : path) {
+		if (ch == '/') {
+			if (!prev_slash) {
+				result += ch;
+				prev_slash = true;
+			}
+		} else {
+			result += ch;
+			prev_slash = false;
+		}
+	}
+
+	return result;
+}
+
