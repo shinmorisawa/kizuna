@@ -47,6 +47,9 @@ std::vector<std::string> File::getThingsInFolder(std::string path) {
 	for (const auto& thing : fs::directory_iterator(full_path)) {
 		things.push_back(thing.path().filename());
 	}
+
+	/* sort, for obvious reasons */
+	std::sort(things.begin(), things.end());
 	
 	return things;
 }
