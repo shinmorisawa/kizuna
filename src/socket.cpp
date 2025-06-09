@@ -108,7 +108,7 @@ void Socket::startAcceptingTLSClients(SSL_CTX* ctx, int serverSocket) {
 				parsed_request.ip = ip;
 				int size = App::sizeOfResponse(parsed_request, 1);
 				std::string chunk;
-				if (size >= 4096) {
+				if (size >= 409610101010101) {
 					if (parsed_request.method == "GET") {
 						int chunks = (size / 4096) + 1;
 						for (int i = 0; i < chunks; i++) {

@@ -25,15 +25,14 @@ std::string File::getFile(std::string path) {
 	return buf.str();
 }
 
-int File::sizeOfFile(std::string path) {
+unsigned long long File::sizeOfFile(std::string path) {
 	if (!path.empty() && path[0] == '/') path = path.substr(1);
 	fs::path full_path = base_path / path;
 	full_path = fs::weakly_canonical(full_path);
 
 	std::ifstream file(full_path, std::ios::binary);
 
-	std::streampos pos = file.tellg();
-	return static_cast<int>(pos);
+	return static_cast<unsigned long long>(file.tellg());
 }
 
 

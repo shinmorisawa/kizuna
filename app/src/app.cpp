@@ -97,12 +97,6 @@ int App::sizeOfResponse(HTTP::Request request, int isTLS) {
 	HTTP::Response response(200, "OK", "");
 	std::string path = request.path;
 
-	if (response.status_code == 404) {
-		std::cout << "got request for: " << path << " from " << request.ip << " but it failed, so returning 404 page :(" << std::endl;
-	} else {
-		std::cout << "got request for: " << path << " from " << request.ip << " size " << File::sizeOfFile(path) << std::endl;
-	}
-
 	if (request.method == "BREW") {
 		response.body = "i'm a teapot";
 		response.headers["Content-Length"] = "12";
@@ -155,9 +149,7 @@ int App::sizeOfResponse(HTTP::Request request, int isTLS) {
 		return std::stoi(response.headers["Content-Length"]);
 	}
 
-	response.body = File::getFile(path);
-	response.headers["Content-Length"] = std::to_string(response.body.size());
-	response.headers["Content-Type"] = File::getMIMEType(path);
+	response.headers["Content-Length"] = std::to_string(File::sizeOfFile(path));
 
 	if (request.headers["Malformed"] == "yes, please") {
 		response.status_code = 400;
