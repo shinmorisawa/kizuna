@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <openssl/ssl.h>
 #include "file.hpp"
 #include "http.hpp"
 #include "app.hpp"
@@ -170,14 +171,9 @@ int App::sizeOfResponse(HTTP::Request request, int isTLS) {
 	return std::stoi(response.headers["Content-Length"]);
 }
 
-std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk) {
+void App::sendBigResponse(HTTP::Request request, SSL* ssl) {
 	HTTP::Response response(200, "OK", "");
 	std::string path = request.path;
-
-	if (chunk > 1) {
-		std::string thingy = File::getChunkFromFile(path, chunk);
-		return thingy;
-	}
 
 	if (response.status_code == 404) {
 		std::cout << "got request for: " << path << " from " << request.ip << " but it failed, so returning 404 page :(" << std::endl;
@@ -196,14 +192,7 @@ std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk
 		response.status_text = "I'm a teapot";
 		std::cout << "someone tried to brew coffee :(" << std::endl;
 
-		return response.toString();
-	}
-
-	if (isTLS != 1) {
-		HTTP::Response moved(301, "Moved Permanently", "");
-		std::string host = request.headers["Host"];
-		moved.headers["Location"] = "https://" + host + request.path;
-		return moved.toString();
+		SSL_write(ssl, response.toString().c_str(), response.toString().size());
 	}
 
 	if (path == "/") {
@@ -236,7 +225,8 @@ std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk
 		response.body.append("</div></div></body></html");
 		response.headers["Content-Length"] = std::to_string(response.body.size());
 		response.headers["Content-Type"] = "text/html";
-		return response.toString();
+
+		SSL_write(ssl, response.toString().c_str(), response.toString().size());
 	}
 
 	response.body = File::getFile(path);
@@ -260,7 +250,7 @@ std::string App::returnChunkResponse(HTTP::Request request, int isTLS, int chunk
 	}
 
 
-	return response.toString();
+	SSL_write(ssl, response.toString().c_str(), response.toString().size());
 }
 
 void App::handlePost([[maybe_unused]]HTTP::Request request) {
