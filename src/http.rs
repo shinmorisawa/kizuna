@@ -25,7 +25,6 @@ impl Response {
         }
 
         res.push_str("\r\n");
-        res.push_str(&String::from_utf8_lossy(&self.body));
 
         res
     }
